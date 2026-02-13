@@ -2,14 +2,13 @@ var myGamePiece;
 var myObstacles = [];
 var myBonus = [];
 var myScore;
-var myLives;
+var bonusScore = 0;
 var gameRunning = true;
 
 function startGame() {
     myGamePiece = new component(30, 30, "#FFD700", 10, 120);
     myGamePiece.gravity = 0.05;
     myScore = new component("20px", "Arial", "black", 280, 40, "text");
-    myLives = new component("20px", "Arial", "black", 280, 20, "text");
     myGameArea.start();
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -36,7 +35,6 @@ var myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.lives = 3;
         this.interval = setInterval(updateGameArea, 20);
         },
     clear : function() {
@@ -64,7 +62,6 @@ function component(width, height, color, x, y, type) {
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
         } else if (this.type == "bonus") {
-            // Disegna stella
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.moveTo(this.x + this.width/2, this.y);
@@ -125,23 +122,23 @@ function updateGameArea() {
     
     if (!gameRunning) return;
     
-    // Controllo collisioni con ostacoli
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
-            myGameArea.lives -= 1;
-            updateLives();
-            if (myGameArea.lives <= 0) {
-                endGame();
-                return;
-            }
+            endGame();
+            return;
         } 
     }
     
-    // Controllo collisioni con bonus
+    for (i = myObstacles.length - 1; i >= 0; i -= 1) {
+        if (myObstacles[i].x < -20) {
+            myObstacles.splice(i, 1);
+        }
+    }
+    
     for (i = myBonus.length - 1; i >= 0; i -= 1) {
         if (myGamePiece.crashWith(myBonus[i]) && !myBonus[i].collected) {
             myBonus[i].collected = true;
-            myGameArea.frameNo += 50;
+            bonusScore += 100;
             myBonus.splice(i, 1);
         }
     }
@@ -149,7 +146,6 @@ function updateGameArea() {
     myGameArea.clear();
     myGameArea.frameNo += 1;
     
-    // Crea ostacoli
     var interval = Math.max(100, 180 - Math.floor(myGameArea.frameNo / 500));
     if (myGameArea.frameNo == 1 || everyinterval(interval)) {
         x = myGameArea.canvas.width;
@@ -163,23 +159,17 @@ function updateGameArea() {
         myObstacles.push(new component(15, height, "#2D5016", x, 0));
         myObstacles.push(new component(15, myGameArea.canvas.height - height - gap, "#2D5016", x, height + gap));
         
-        // Aggiungi bonus casualmente
         if (Math.random() > 0.7) {
-            var bonusY = Math.random() * (myGameArea.canvas.height - 30);
+            var bonusY = Math.floor(Math.random() * (gap - 40) + height + 10);
             myBonus.push(new component(20, 20, "#FF1493", x, bonusY, "bonus"));
         }
     }
     
-    // Aggiorna ostacoli
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -2;
         myObstacles[i].update();
-        if (myObstacles[i].x < -20) {
-            myObstacles.splice(i, 1);
-        }
     }
     
-    // Aggiorna bonus
     for (i = 0; i < myBonus.length; i += 1) {
         myBonus[i].x += -2;
         myBonus[i].update();
@@ -188,9 +178,9 @@ function updateGameArea() {
         }
     }
     
-    myScore.text = "⭐ Punti: " + myGameArea.frameNo;
+    myScore.text = "⭐ Punti: " + (myGameArea.frameNo + bonusScore);
     myScore.update();
-    
+
     myGamePiece.newPos();
     myGamePiece.update();
 }
@@ -206,13 +196,6 @@ function accelerate(n) {
     }
 }
 
-function updateLives() {
-    var livesDisplay = document.getElementById('lives');
-    var scores = document.getElementById('score');
-    if (livesDisplay) {
-        livesDisplay.textContent = "❤️ Vite: " + myGameArea.lives;
-    }
-}
 
 function endGame() {
     gameRunning = false;
