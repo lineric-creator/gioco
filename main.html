@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 20px;
+}
+
+canvas {
+    border: 3px solid #333;
+    background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+    display: block;
+    margin: 20px auto;
+    cursor: pointer;
+}
+
+.controls {
+    background: rgba(255,255,255,0.9);
+    padding: 15px 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 20px auto;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+button {
+    background: #FF6B6B;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #FF5252;
+}
+
+button:active {
+    background: #FF4444;
+}
+
+.info {
+    color: #333;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.game-over {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 28px;
+    display: none;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.game-over h1 {
+    margin: 0 0 20px 0;
+    font-size: 48px;
+    color: #FF6B6B;
+}
+
+.game-over p {
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.game-over button {
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-size: 18px;
+}
+</style>
+</head>
+<body>
+<h1>🎮 Sky Runner 🎮</h1>
+<div class="controls">
+    <div class="info">⌨️ SPAZIO o 🖱️ CLICK per saltare</div>
+    <button onmousedown="accelerate(-0.25)" onmouseup="accelerate(0.05)" ontouchstart="accelerate(-0.25)" ontouchend="accelerate(0.05)">☝️ SALTA</button>
+    <div class="info" id="lives">❤️ Vite: 3</div>
+    <div class="info" id="score">⭐ Punti: 0</div>
+</div>
+<div class="game-over" id="gameOverScreen">
+    <h1>GAME OVER!</h1>
+    <p id="finalScore">Punteggio Finale: 0</p>
+    <button onclick="location.reload()">Riprova</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
